@@ -35,7 +35,7 @@ IUSE="doc systemd test webkit ${QTC_PLUGINS[@]%:*}"
 QT_PV="5.4.0:5"
 
 RDEPEND="
-	=dev-libs/botan-1.10*[bindist,threads]
+	=dev-libs/botan-1.10*[-bindist,threads]
 	>=dev-qt/designer-${QT_PV}
 	>=dev-qt/qtconcurrent-${QT_PV}
 	>=dev-qt/qtcore-${QT_PV}
@@ -122,13 +122,13 @@ src_prepare() {
 src_configure() {
 	eqmake5 IDE_LIBRARY_BASENAME="$(get_libdir)" \
 		IDE_PACKAGE_MODE=1 \
-		LLVM_INSTALL_DIR="${EPREFIX}/usr" \
-		QBS_INSTALL_DIR="${EPREFIX}/usr" \
-		CONFIG+=qbs_disable_rpath \
-		CONFIG+=qbs_enable_project_file_updates \
-		$(use systemd && echo CONFIG+=journald) \
-		$(use test && echo BUILD_TESTS=1) \
-		USE_SYSTEM_BOTAN=1
+		#LLVM_INSTALL_DIR="${EPREFIX}/usr" \
+		#QBS_INSTALL_DIR="${EPREFIX}/usr" \
+		#CONFIG+=qbs_disable_rpath \
+		#CONFIG+=qbs_enable_project_file_updates \
+		#$(use systemd && echo CONFIG+=journald) \
+		#$(use test && echo BUILD_TESTS=1) \
+		#USE_SYSTEM_BOTAN=1
 }
 
 src_test() {
