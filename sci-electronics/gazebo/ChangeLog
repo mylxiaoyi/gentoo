@@ -1,14 +1,11 @@
-# ChangeLog for x11-libs/libQGLViewer
+# ChangeLog for sci-electronics/gazebo
 # Copyright 1999-2015 Gentoo Foundation; Distributed under the GPL v2
 # (auto-generated from git log)
 
-*libQGLViewer-2.6.3 (09 Aug 2015)
-*libQGLViewer-2.6.2 (09 Aug 2015)
-*libQGLViewer-2.6.1 (09 Aug 2015)
+*gazebo-5.1.0 (09 Aug 2015)
 
-  09 Aug 2015; Robin H. Johnson <robbat2@gentoo.org>
-  +libQGLViewer-2.6.1.ebuild, +libQGLViewer-2.6.2.ebuild,
-  +libQGLViewer-2.6.3.ebuild, +metadata.xml:
+  09 Aug 2015; Robin H. Johnson <robbat2@gentoo.org> +files/bullet_283.patch,
+  +gazebo-5.1.0.ebuild, +metadata.xml:
   proj/gentoo: Initial commit
 
   This commit represents a new era for Gentoo:
@@ -56,4 +53,35 @@
   This partially reverts eaaface92ee81f30a6ac66fe7acbcc42c00dc450.
 
   Bug: https://bugs.gentoo.org/552720
+
+  16 Sep 2015; Alexis Ballier <aballier@gentoo.org> +files/ffmpeg29.patch,
+  gazebo-5.1.0.ebuild:
+  fix build with ffmpeg git master.
+
+  Package-Manager: portage-2.2.20.1
+
+  16 Sep 2015; Alexis Ballier <aballier@gentoo.org> gazebo-5.1.0.ebuild:
+  trailing whitespace
+
+  Package-Manager: portage-2.2.20.1
+
+*gazebo-6.1.0 (16 Sep 2015)
+
+  16 Sep 2015; Alexis Ballier <aballier@gentoo.org> +gazebo-6.1.0.ebuild:
+  Bump to 6.1.0.
+
+  Package-Manager: portage-2.2.20.1
+
+  19 Sep 2015; Alexis Ballier <aballier@gentoo.org> -files/bullet_283.patch,
+  -gazebo-5.1.0.ebuild:
+  remove old.
+
+  Package-Manager: portage-2.2.20.1
+
+*gazebo-6.5.1 (01 Nov 2015)
+
+  01 Nov 2015; Alexis Ballier <aballier@gentoo.org> +gazebo-6.5.1.ebuild:
+  Bump to 6.5.1.
+
+  Package-Manager: portage-2.2.23
 

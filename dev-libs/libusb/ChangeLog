@@ -1,14 +1,13 @@
-# ChangeLog for x11-libs/libQGLViewer
+# ChangeLog for dev-libs/libusb
 # Copyright 1999-2015 Gentoo Foundation; Distributed under the GPL v2
 # (auto-generated from git log)
 
-*libQGLViewer-2.6.3 (09 Aug 2015)
-*libQGLViewer-2.6.2 (09 Aug 2015)
-*libQGLViewer-2.6.1 (09 Aug 2015)
+*libusb-1.0.19 (09 Aug 2015)
+*libusb-1.0.18 (09 Aug 2015)
+*libusb-1.0.9-r2 (09 Aug 2015)
 
-  09 Aug 2015; Robin H. Johnson <robbat2@gentoo.org>
-  +libQGLViewer-2.6.1.ebuild, +libQGLViewer-2.6.2.ebuild,
-  +libQGLViewer-2.6.3.ebuild, +metadata.xml:
+  09 Aug 2015; Robin H. Johnson <robbat2@gentoo.org> +libusb-1.0.9-r2.ebuild,
+  +libusb-1.0.18.ebuild, +libusb-1.0.19.ebuild, +metadata.xml:
   proj/gentoo: Initial commit
 
   This commit represents a new era for Gentoo:

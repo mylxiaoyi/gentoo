@@ -3,21 +3,25 @@
 # $Id$
 
 EAPI=5
-PYTHON_COMPAT=( python2_7 )
+PYTHON_COMPAT=( python{2_7,3_2,3_3,3_4} )
 
-inherit base toolchain-funcs cmake-utils python-single-r1 java-pkg-opt-2 java-ant-2
+inherit base toolchain-funcs cmake-utils python-single-r1 java-pkg-opt-2 java-ant-2 git-r3
 
 DESCRIPTION="A collection of algorithms and sample code for various computer vision problems"
-HOMEPAGE="http://opencv.willowgarage.com"
+HOMEPAGE="http://opencv.org"
 
-SRC_URI="mirror://sourceforge/opencvlibrary/opencv-unix/${PV}/${P}.zip"
+EGIT_REPO_URI="
+	https://github.com/Itseez/opencv"
+#	contrib? ( https://github.com/Itseez/opencv_contrib opencv_contrib )"
+EGIT_STORE="/usr/portage/distfiles/git3-src"
 
 LICENSE="BSD"
-SLOT="0/2.4"
-KEYWORDS="amd64 ~arm ppc ~ppc64 x86 ~amd64-linux"
-IUSE="cuda doc +eigen examples ffmpeg gstreamer gtk ieee1394 ipp jpeg jpeg2k libav opencl openexr opengl openmp pch png +python qt4 testprograms threads tiff v4l vtk xine"
+SLOT="0/3.0"
+KEYWORDS="~amd64 ~arm ~ppc ~ppc64 ~x86 ~amd64-linux"
+IUSE="contrib cuda doc +eigen examples ffmpeg gstreamer gtk ieee1394 ipp jpeg jpeg2k libav opencl openexr opengl openmp pch png +python qt4 qt5 testprograms threads tiff v4l vtk xine"
 REQUIRED_USE="
 	python? ( ${PYTHON_REQUIRED_USE} )
+	?? ( qt4 qt5 )
 "
 
 # The following logic is intrinsic in the build system, but we do not enforce
@@ -29,14 +33,15 @@ REQUIRED_USE="
 RDEPEND="
 	app-arch/bzip2
 	sys-libs/zlib
+	media-libs/libwebp
 	cuda? ( >=dev-util/nvidia-cuda-toolkit-5.5 )
 	ffmpeg? (
 		libav? ( media-video/libav:0= )
 		!libav? ( media-video/ffmpeg:0= )
 	)
 	gstreamer? (
-		media-libs/gstreamer:0.10
-		media-libs/gst-plugins-base:0.10
+		media-libs/gstreamer:1.0
+		media-libs/gst-plugins-base:1.0
 	)
 	gtk? (
 		dev-libs/glib:2
@@ -61,6 +66,12 @@ RDEPEND="
 		dev-qt/qttest:4
 		opengl? ( dev-qt/qtopengl:4 )
 	)
+	qt5? (
+		dev-qt/qtgui:5
+		dev-qt/qttest:5
+		dev-qt/qtconcurrent:5
+		opengl? ( dev-qt/qtopengl:5 )
+	)
 	threads? ( dev-cpp/tbb )
 	tiff? ( media-libs/tiff:0 )
 	v4l? ( >=media-libs/libv4l-0.8.3 )
@@ -73,17 +84,13 @@ DEPEND="${RDEPEND}
 	java? ( >=virtual/jdk-1.6 )
 "
 
-PATCHES=(
-	"${FILESDIR}/${PN}-2.3.1a-libav-0.7.patch"
-	"${FILESDIR}/${PN}-2.4.3-gcc47.patch"
-	"${FILESDIR}/${PN}-2.4.2-cflags.patch"
-	"${FILESDIR}/${PN}-2.4.8-javamagic.patch"
-	"${FILESDIR}/${PN}-2.4.9-cuda.patch"
-	"${FILESDIR}/${PN}-2.4.9-libav10.patch"
-	"${FILESDIR}/${PN}-2.4.9-cuda-pkg-config.patch"
-)
-
 pkg_setup() {
+	#git-r3_fetch https://github.com/Itseez/opencv refs/heads/master 
+	#git-r3_fetch https://github.com/Itseez/opencv_contrib refs/heads/master
+
+	git clone ${EGIT_STORE}/Itseez_opencv.git ${WORKDIR}/opencv
+	git clone ${EGIT_STORE}/Itseez_opencv_contrib.git ${WORKDIR}/opencv_contrib
+
 	use python && python-single-r1_pkg_setup
 	java-pkg-opt-2_pkg_setup
 }
@@ -94,8 +101,8 @@ src_prepare() {
 	# remove bundled stuff
 	rm -rf 3rdparty
 	sed -i \
-		-e '/add_subdirectory(3rdparty)/ d' \
-		CMakeLists.txt || die
+		-e '/add_subdirectory(.*3rdparty.*)/ d' \
+		CMakeLists.txt cmake/*cmake || die
 
 	java-pkg-opt-2_src_prepare
 }
@@ -149,6 +156,7 @@ src_configure() {
 		-DBUILD_ANDROID_EXAMPLES=OFF
 		$(cmake-utils_use_build doc DOCS)
 		$(cmake-utils_use_build examples)
+		$(cmake-utils_use_build java opencv_java)		#for -java bug #555650
 		-DBUILD_PERF_TESTS=OFF
 		$(cmake-utils_use_build testprograms TESTS)
 	# install examples, tests etc
@@ -156,34 +164,25 @@ src_configure() {
 		$(cmake-utils_use testprograms INSTALL_TESTS)
 	# build options
 		$(cmake-utils_use_enable pch PRECOMPILED_HEADERS)
-		-DENABLE_OMIT_FRAME_POINTER=OFF				#
-		-DENABLE_FAST_MATH=OFF					#
-		-DENABLE_SSE=OFF					# these options do nothing but
-		-DENABLE_SSE2=OFF					# add params to CFLAGS
-		-DENABLE_SSE3=OFF
-		-DENABLE_SSSE3=OFF
-		-DENABLE_SSE41=OFF
-		-DENABLE_SSE42=OFF
 		-DOPENCV_EXTRA_FLAGS_RELEASE=""				# black magic
 	)
 
 	if use qt4; then
 		mycmakeargs+=( "-DWITH_QT=4" )
+	elif use qt5; then
+		mycmakeargs+=( "-DWITH_QT=5" )
 	else
 		mycmakeargs+=( "-DWITH_QT=OFF" )
 	fi
 
+	if use contrib; then
+		mycmakeargs+=( "-DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib-master/modules" )
+	fi
+
 	if use cuda; then
-		if [[ "$(gcc-version)" > "4.7" ]]; then
-			ewarn "CUDA and >=sys-devel/gcc-4.8 do not play well together. Disabling CUDA support."
-			mycmakeargs+=( "-DWITH_CUDA=OFF" )
-			mycmakeargs+=( "-DWITH_CUBLAS=OFF" )
-			mycmakeargs+=( "-DWITH_CUFFT=OFF" )
-		else
-			mycmakeargs+=( "-DWITH_CUDA=ON" )
-			mycmakeargs+=( "-DWITH_CUBLAS=ON" )
-			mycmakeargs+=( "-DWITH_CUFFT=ON" )
-		fi
+		mycmakeargs+=( "-DWITH_CUDA=ON" )
+		mycmakeargs+=( "-DWITH_CUBLAS=ON" )
+		mycmakeargs+=( "-DWITH_CUFFT=ON" )
 	else
 		mycmakeargs+=( "-DWITH_CUDA=OFF" )
 		mycmakeargs+=( "-DWITH_CUBLAS=OFF" )

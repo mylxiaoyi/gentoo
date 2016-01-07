@@ -14,7 +14,7 @@ SRC_URI="mirror://sourceforge/opencvlibrary/opencv-unix/${PV}/${P}.zip"
 
 LICENSE="BSD"
 SLOT="0/2.4"
-KEYWORDS="amd64 ~arm ppc ~ppc64 x86 ~amd64-linux"
+KEYWORDS="~amd64 ~arm ~ppc ~ppc64 ~x86 ~amd64-linux"
 IUSE="cuda doc +eigen examples ffmpeg gstreamer gtk ieee1394 ipp jpeg jpeg2k libav opencl openexr opengl openmp pch png +python qt4 testprograms threads tiff v4l vtk xine"
 REQUIRED_USE="
 	python? ( ${PYTHON_REQUIRED_USE} )
@@ -35,8 +35,8 @@ RDEPEND="
 		!libav? ( media-video/ffmpeg:0= )
 	)
 	gstreamer? (
-		media-libs/gstreamer:0.10
-		media-libs/gst-plugins-base:0.10
+		media-libs/gstreamer:1.0
+		media-libs/gst-plugins-base:1.0
 	)
 	gtk? (
 		dev-libs/glib:2
@@ -78,8 +78,6 @@ PATCHES=(
 	"${FILESDIR}/${PN}-2.4.3-gcc47.patch"
 	"${FILESDIR}/${PN}-2.4.2-cflags.patch"
 	"${FILESDIR}/${PN}-2.4.8-javamagic.patch"
-	"${FILESDIR}/${PN}-2.4.9-cuda.patch"
-	"${FILESDIR}/${PN}-2.4.9-libav10.patch"
 	"${FILESDIR}/${PN}-2.4.9-cuda-pkg-config.patch"
 )
 
