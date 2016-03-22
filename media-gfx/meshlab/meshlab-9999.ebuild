@@ -42,8 +42,8 @@ src_configure() {
 
 src_compile() {
 	cd "${S}/meshlab/src"
-	cd external && emake
-	cd .. && emake
+	cd external && make
+	cd .. && make
 }
 
 src_install() {
